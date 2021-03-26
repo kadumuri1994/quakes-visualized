@@ -2,6 +2,11 @@ version: "3"
 
 services:
   backend-app: &backend-app
+    environment:
+      - DB_HOST=db
+      - DB_NAME=mydb-dev
+      - DB_USER=postgres
+      - DB_PASS=postgres
     build:
       context: .
     ports:
@@ -15,6 +20,20 @@ services:
   seismic-ws-client:
     <<: *backend-app
 
-    ports: []
+    ports: ["8003"]
     command: /start-ws-client
     container_name: seismic-ws-client
+  
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=mydb-dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - quake-volume:/var/lib/postgresql/data
+
+volumes:
+  quake-volume:
